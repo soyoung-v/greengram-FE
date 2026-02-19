@@ -13,10 +13,10 @@ const state = reactive({
     data: {
         nm: '홍길동',
         uid: 'mic2',
-        upw: 'aaaa1212!!',        
-        pic: null,        
+        upw: 'aaaa1212!!'              
     },
     chkUpw: 'aaaa1212!!',
+    pic: null
 });
 
 const openFileSelector = e => {
@@ -25,13 +25,13 @@ const openFileSelector = e => {
 
 const handlePicChanged = e => {
     imageUrl.value = null;
-    state.data.pic = e.target.files[0];
-    if (state.data.pic) {
+    state.pic = e.target.files[0];
+    if (state.pic) {
         const reader = new FileReader();
         reader.onload = (e) => {
         imageUrl.value = e.target.result; // Data URL로 변환하여 저장
         };
-        reader.readAsDataURL(state.data.pic);
+        reader.readAsDataURL(state.pic);
     }
 };
 
@@ -39,17 +39,17 @@ const submit = async () => {
     //유효성 체크
     if (checkValidation()) { return; }
 
-  //비밀번호, 확인 비밀번호 체크
+    //비밀번호, 확인 비밀번호 체크
     if (state.chkUpw !== state.data.upw) {
-        alert('비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+        alert( '비밀번호와 확인 비밀번호가 일치하지 않습니다.' );
         return;
     }
 
 
     const formData = new FormData();
     formData.append( 'req', new Blob([JSON.stringify(state.data)], { type: 'application/json' }) );
-    if (state.data.pic) {
-        formData.append( 'pic', state.data.pic );
+    if (state.pic) {
+        formData.append( 'pic', state.pic );
     }
 
     const res = await signUp(formData);
@@ -110,7 +110,8 @@ const submit = async () => {
                 class="form-control valid"
                 id="nickName"
                 placeholder="닉네임"
-                v-model="state.data.nickName"
+                v-model="state.data.nm"
+                not-null-message="닉네임은 필수로 입력하셔야 합니다."
                 regexp="^[가-힣]{2,10}$"
                 regexp-message="닉네임은 한글로 2~10자까지 가능합니다." />
             <label for="nickName" class="form-label">닉네임</label>
@@ -124,7 +125,7 @@ const submit = async () => {
                 type="file"
                 accept="image/*"
                 @change="handlePicChanged" />
-            <span class="ms-3" v-if="state.data.pic">{{ state.data.pic.name }}</span>
+            <span class="ms-3" v-if="state.pic">{{ state.pic.name }}</span>
             </div>
             <div v-if="imageUrl">
                 <img :src="imageUrl" alt="Selected" style="max-width: 300px; margin-top: 10px;" />
