@@ -30,6 +30,11 @@ const submit = async () => {
     }
 };
 
+// 소셜 로그인 (백엔드 OAuth2 엔드포인트로 리다이렉트)
+function socialLogin(provider) {
+  window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`
+}
+
 </script>
 
 <template>
@@ -64,6 +69,17 @@ const submit = async () => {
         <label for="upw">비밀번호</label>
         </div>
         <button class="w-100 h6 btn py-3 btn-primary">로그인</button>
+        <div class="social-buttons">
+        <button type="button" @click="socialLogin('google')" class="btn-social google">
+          Google 로그인
+        </button>
+        <button type="button" @click="socialLogin('kakao')" class="btn-social kakao">
+          Kakao 로그인
+        </button>
+        <button type="button" @click="socialLogin('naver')" class="btn-social naver">
+          Naver 로그인
+        </button>
+      </div>
     </form>      
     <div>
         <router-link to="/sign-up"><span>회원가입</span></router-link>
@@ -75,5 +91,31 @@ const submit = async () => {
 <style scoped>
 .container {
     max-width: 576px;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.btn-social {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #E0E3EB;
+  background: #fff;
+}
+.btn-social.google { color: #EA4335; }
+.btn-social.google:hover { background: #FFF0EF; }
+.btn-social.kakao { color: #3C1E1E; background: #FEE500; border-color: #FEE500; }
+.btn-social.naver { color: #fff; background: #03C75A; border-color: #03C75A; }
+.register-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #999;
 }
 </style>

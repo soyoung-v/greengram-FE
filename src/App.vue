@@ -1,15 +1,18 @@
 <script setup>
 import HeaderComponent from './components/HeaderComponent.vue';
 import loadingImg from '@/assets/loading.gif';
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch, nextTick } from 'vue';
 import { useMessageModalStore } from './stores/messageModal';
 import { useAuthenticationStore } from './stores/authentication';
 import { useFeedStore } from './stores/feed';
 import { postFeed } from './services/feedService';
 import { useCommentModalStore } from './stores/commentModal';
 import FeedCommentCard from './components/FeedCommentCard.vue';
+import { useInfiniteScroll } from '@/composables/useInfiniteScroll';
 
 const modalCloseButton = ref(null);
+const commentListContainer = ref(null);
+
 const messageModalStore = useMessageModalStore();
 const authenticationStore = useAuthenticationStore();
 const feedStore = useFeedStore();
@@ -92,6 +95,7 @@ const initInputs = () => {
     state.feed.contents = '';
     state.feed.location = '';
     state.feed.pics = [];
+    state.previewPics = [];
 }
 
 const getCurrentTimestamp = () => {
@@ -107,6 +111,39 @@ const getCurrentTimestamp = () => {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
+//메인 스크롤 방지 > 풀기 toggle
+watch(() => commentModalStore.state.showModal,(isShown) => {
+    document.body.classList.toggle('no-scroll', isShown);
+});
+
+const { check: checkInfiniteScroll } = useInfiniteScroll(commentListContainer, () => {
+    commentModalStore.doGetCommentList();
+});
+
+//댓글에서 스크롤이 내려간 상태에서 댓글을 쓰면 댓글 스크롤이 상단으로 이동
+watch(() => commentModalStore.state.commentList, async (newList) => {
+    // newList의 첫번째 항목이 방금 사용자가 작성한 댓글인지 확인 (isSelf 속성으로 확인)
+    if (newList.length > 0 && newList[0].isSelf) {
+        // Vue가 DOM을 새 댓글을 포함해 다시 그릴 때까지 기다림
+        await nextTick();
+
+        if (commentListContainer.value) {
+            commentListContainer.value.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        // isSelf 플래그는 일회성으로만 사용하는 것이 좋으므로, 확인 후 제거하거나 false로 변경
+        // 여기서는 unshift로 추가된 새 댓글이므로, 다음 DOM 업데이트 사이클에서 isSelf를 false로 바꿔 오동작을 방지
+        await nextTick();
+        newList[0].isSelf = false;
+    }
+
+    // 댓글 리스트 변경 후 (삭제 포함) 스크롤 상태를 다시 확인
+    await nextTick();
+    checkInfiniteScroll(); //댓글 삭제를 하면 다음 페이지 호출
+}, { deep: true }); //deep: true는 리스트 item의 값 변경까지도 watch하겠다는 의미
 </script>
 
 <template>
@@ -117,12 +154,12 @@ const getCurrentTimestamp = () => {
 
     <b-modal v-model="commentModalStore.state.showModal" size="lg" no-close-on-backdrop hide-footer modal-class="my-custom-modal" @close="commentModalStore.close">
         <div class="p-3 h100p d-flex flex-column comment-container">
-            <div class="comment-list overflow-y-auto">
+            <div ref="commentListContainer" class="comment-list overflow-y-auto">
                 <feed-comment-card
                     v-for="(item, idx) in commentModalStore.state.commentList"
                     :key="item.feedCommentId"
                     :item="item"
-                    @on-delete-comment="commentModalStore.doDeleteComment(item.feedCommentId, idx)" />
+                    @on-delete-comment="commentModalStore.doDeleteComment(item.feedCommentId, idx, item.feedId)" />
                 <div v-if="commentModalStore.state.isLoading" class="loading display-none">
                     <img :src="loadingImg" />
                 </div>

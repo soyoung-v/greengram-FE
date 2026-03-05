@@ -41,6 +41,17 @@ export const useFeedStore = defineStore('feed',
             state.feedList = []
         }
 
+        const commentCountUp = feedId => {            
+            const feed = state.feedList.find(item => item.feedId === feedId);
+            feed.commentCount++;
+            
+        }
+
+        const commentCountDown = feedId => {
+            const feed = state.feedList.find(item => item.feedId === feedId);            
+            feed.commentCount--;
+        }
+
         const feedList = computed(() => state.feedList )
 
         const page = computed( () => state.page );
@@ -64,6 +75,8 @@ export const useFeedStore = defineStore('feed',
                 , addFeedUnshift
                 , deleteFeedByIdx
                 , clearList 
+                , commentCountUp
+                , commentCountDown
                 };
     }
 )
