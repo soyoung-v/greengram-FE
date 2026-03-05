@@ -9,6 +9,7 @@ import { postFeed } from './services/feedService';
 import { useCommentModalStore } from './stores/commentModal';
 import FeedCommentCard from './components/FeedCommentCard.vue';
 import { useInfiniteScroll } from '@/composables/useInfiniteScroll';
+import { getCurrentTimestamp } from './utils/commonUtils';
 
 const modalCloseButton = ref(null);
 const commentListContainer = ref(null);
@@ -98,19 +99,6 @@ const initInputs = () => {
     state.previewPics = [];
 }
 
-const getCurrentTimestamp = () => {
-    const today = new Date();
-
-    const year = today.getFullYear();
-    const month = ('0' + (today.getMonth() + 1)).slice(-2);
-    const day = ('0' + today.getDate()).slice(-2);
-
-    const hours = ('0' + today.getHours()).slice(-2); 
-    const minutes = ('0' + today.getMinutes()).slice(-2);
-    const seconds = ('0' + today.getSeconds()).slice(-2); 
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
 
 //메인 스크롤 방지 > 풀기 toggle
 watch(() => commentModalStore.state.showModal,(isShown) => {
@@ -152,14 +140,15 @@ watch(() => commentModalStore.state.commentList, async (newList) => {
     
     <b-modal v-model="messageModalStore.state.isShow" ok-only>{{ messageModalStore.state.message }}</b-modal>
 
-    <b-modal v-model="commentModalStore.state.showModal" size="lg" no-close-on-backdrop hide-footer modal-class="my-custom-modal" @close="commentModalStore.close">
+    <b-modal v-model="commentModalStore.state.showModal" size="lg" 
+            no-close-on-backdrop hide-footer 
+            modal-class="my-custom-modal" @close="commentModalStore.close">
         <div class="p-3 h100p d-flex flex-column comment-container">
             <div ref="commentListContainer" class="comment-list overflow-y-auto">
-                <feed-comment-card
-                    v-for="(item, idx) in commentModalStore.state.commentList"
+                <FeedCommentCard
+                    v-for="item in commentModalStore.state.commentList"
                     :key="item.feedCommentId"
-                    :item="item"
-                    @on-delete-comment="commentModalStore.doDeleteComment(item.feedCommentId, idx, item.feedId)" />
+                    :item="item" />
                 <div v-if="commentModalStore.state.isLoading" class="loading display-none">
                     <img :src="loadingImg" />
                 </div>

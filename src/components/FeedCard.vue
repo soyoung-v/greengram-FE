@@ -1,13 +1,12 @@
 <script setup>
 import ProfileImg from './ProfileImg.vue';
-import FeedCommentContainer from './FeedCommentContainer.vue';
 import { useAuthenticationStore } from '@/stores/authentication';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { ref, reactive } from 'vue';
-import { getDateTimeInfo } from '@/utils/feedUtils';
 import { toggleFeedLike } from '@/services/feedLikeService';
 import { useCommentModalStore } from '@/stores/commentModal';
+import { getDateTimeInfo } from '@/utils/commonUtils';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -62,7 +61,7 @@ const showCommentModel = () => {
     <div class="d-flex flex-row ps-3 pe-3">
       <div class="d-flex flex-column justify-content-center">
         <router-link :to="`/profile/${props.item.writerUserId}`">
-          <profile-img
+          <ProfileImg
             :userId="props.item.writerUserId"
             :pic="props.item.writerPic"
             :size="30"
@@ -72,23 +71,19 @@ const showCommentModel = () => {
       <div class="p-3 flex-grow-1">
         <div>
           <router-link :to="`/profile/${props.item.writerUserId}`">
-            <span class="pointer"
-              >{{
+             <span class="pointer">
+              {{
                 props.item.writerNickName
                   ? props.item.writerNickName
                   : props.item.writerUid
               }}
-              - {{ getDateTimeInfo(props.item.createdAt) }}</span
-            >
+              - {{ getDateTimeInfo(props.item.createdAt) }}
+            </span>
           </router-link>
         </div>
         <div>{{ props.item.location }}</div>
       </div>            
-      <div
-        v-if="
-          props.ynDel &&
-          props.item.writerUserId === authenticationStore.state.signedUser.userId
-        ">
+      <div v-if=" props.ynDel && props.item.writerUserId === authenticationStore.state.signedUser.userId">
         <div class="d-flex flex-column justify-content-center">
           <font-awesome-icon icon="fa fa-trash" class="pointer color-red" @click="$emit('onDeleteFeed')" />
         </div>
@@ -96,6 +91,7 @@ const showCommentModel = () => {
     </div>
 
     <swiper
+      :loop="true"
       navigation
       :modules="state.modules"
       :pagination="{ clickable: true, dynamicBullets: true }"

@@ -19,14 +19,14 @@ const pic = computed( () => props.pic
                             ?   props.userId === authenticationStore.state.signedUser.userId 
                                 ?   props.pic.startsWith('http') 
                                     ? props.pic
-                                    : `/pic/user/${props.userId}/${authenticationStore.state.signedUser.pic}` 
+                                  : `/pic/user/${authenticationStore.state.signedUser.userId}/${authenticationStore.state.signedUser.pic}` 
                                 : `/pic/user/${props.userId}/${props.pic}` 
                             : defaultProfileImg );
 
 
 const handleImgError = e => {
     e.target.src = defaultProfileImg;
-    e.target.onError = null;
+    e.target.onError = null; //무한루프 방지용 에러이벤트 제거
 }
 
 </script>

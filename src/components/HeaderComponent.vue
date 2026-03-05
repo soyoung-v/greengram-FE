@@ -3,11 +3,14 @@ import logo from '@/assets/logo.png';
 import ProfileImg from './ProfileImg.vue';
 import { useAuthenticationStore } from '@/stores/authentication';
 import { reactive, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { signOut } from '@/services/userService';
+import { useFeedStore } from '@/stores/feed';
 
 const route = useRoute();
+const router = useRouter();
 const authenticationStore = useAuthenticationStore();
+const feedStore = useFeedStore();
 
 const state = reactive({
     search: '',
@@ -63,6 +66,15 @@ const buy = async () => {
     }
 }
 
+//메인 화면으로 이동
+const moveToMain = e => {
+    // 현재 주소가 '/'이면 아무 작업도 안 한다. 
+    if(route.path === '/') { return; }
+     // feedStore.init 초기화해주어야 메인화면에서 모든 사용자의 피드 리스트가 뜬다. 
+    feedStore.init();  
+    router.push('/');
+    }
+
 watch(() => route.fullPath, () => {    
     state.search = '';    
 });
@@ -72,8 +84,8 @@ watch(() => route.fullPath, () => {
 <header class="container py-3" v-if="authenticationStore.state.isSigned">
     <div id="globalConst">
         <div class="d-flex flex-column flex-md-row align-items-center">
-            <div class="d-inline-flex flex-grow-1 flex-shrink-0">
-                <router-link to="/"><img :src="logo" class="h24 w24" /></router-link>
+            <div class="d-inline-flex flex-grow-1 flex-shrink-0 pointer">
+                <img :src="logo" class="h24 w24" @click="moveToMain"/>
             </div>
             <div class="d-inline-flex flex-grow-1 flex-shrink-0">
                 <b-form-input list="search-list-id" @input="onTyping" @keyup.enter="getFeedData" v-model="state.search"/>
