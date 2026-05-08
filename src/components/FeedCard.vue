@@ -3,7 +3,7 @@ import ProfileImg from './ProfileImg.vue';
 import { useAuthenticationStore } from '@/stores/authentication';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { ref, reactive } from 'vue';
+import { reactive } from 'vue';
 import { toggleFeedLike } from '@/services/feedLikeService';
 import { useCommentModalStore } from '@/stores/commentModal';
 import { getDateTimeInfo } from '@/utils/commonUtils';
@@ -13,10 +13,9 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 
-const baseUrl = ref(import.meta.env.VITE_BASE_URL);
 const commentModalStore = useCommentModalStore();
-
 const authenticationStore = useAuthenticationStore();
+const emit = defineEmits(['onDeleteFeed']);
 
 const props = defineProps({
   item: {
@@ -32,13 +31,11 @@ const props = defineProps({
     commentCount: Number,
   },
   ynDel: Boolean,
-  onDeleteFeed: Function,
 });
 
 const state = reactive({
   modules: [Navigation, Pagination, Scrollbar, A11y],
   isLike: props.item.isLike,
-  pagination: props.item.pics.length <= 5 ? { clickable: true } : null,
   likeCount: props.item.likeCount
 });
 
@@ -85,7 +82,7 @@ const showCommentModel = () => {
       </div>            
       <div v-if=" props.ynDel && props.item.writerUserId === authenticationStore.state.signedUser.userId">
         <div class="d-flex flex-column justify-content-center">
-          <font-awesome-icon icon="fa fa-trash" class="pointer color-red" @click="$emit('onDeleteFeed')" />
+          <font-awesome-icon icon="fa fa-trash" class="pointer color-red" @click="emit('onDeleteFeed')" />
         </div>
       </div>
     </div>

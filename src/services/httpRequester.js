@@ -10,9 +10,7 @@ axios.defaults.withCredentials = true;
 axios.interceptors.response.use(
   res => res,
   async err => {
-    console.log('err: ', err);
     if (err.response) {
-      console.log('err.response : ', err.response);
       const authenticationStore = useAuthenticationStore();
       if (err.config.url === '/user/reissue' && err.response.status === 500) { //AT 재발급 시도했으나 에러 터졌음. >> RT 만료
         authenticationStore.signOut(); //로그아웃 처리
@@ -26,7 +24,7 @@ axios.interceptors.response.use(
       } else {
         const message = err.response.data?.message
           ? err.response.data?.message
-          : err.response.data;
+          : err.response.data ?? '요청 처리 중 오류가 발생했습니다.';
 
         const messageModalStore = useMessageModalStore();
         messageModalStore.setMessage(message);

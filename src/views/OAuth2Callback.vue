@@ -17,8 +17,7 @@ onMounted(async () => {
     authStore.setSignedUser(res.data.resultData)
 
     router.replace('/')
-  } catch (e) {
-    console.error(e)
+  } catch {
     router.replace('/sign-in')
   }
 })

@@ -10,7 +10,6 @@ export const useMessageModalStore = defineStore(
         });
 
         const setMessage = val => { 
-            console.log('messageModalStore-setMessage-val:', val);
             state.message = val; 
             state.isShow = true;
         };

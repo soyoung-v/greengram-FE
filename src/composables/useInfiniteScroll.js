@@ -1,9 +1,7 @@
-import { ref, onMounted, onUnmounted, isRef, watch, nextTick } from 'vue';
+import { onMounted, onUnmounted, isRef, watch } from 'vue';
 import { throttle } from '@/utils/commonUtils';
 
 export function useInfiniteScroll(target, callback, options = {}) {
-    console.log('target: ', target);
-    console.log('target === window: ', target === window);
     const { gap = 500, delay = 250 } = options;
     
     const checkScroll = () => {       
@@ -17,7 +15,6 @@ export function useInfiniteScroll(target, callback, options = {}) {
             clientHeight = window.innerHeight;
         } else {
             const el = isRef(target) ? target.value : target;
-            console.log('isRef(target): ', isRef(target));
             if (!el) return;
             scrollTop = el.scrollTop;
             scrollHeight = el.scrollHeight;

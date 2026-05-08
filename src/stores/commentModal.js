@@ -20,12 +20,12 @@ export const useCommentModalStore = defineStore(
         });
 
         const close = () => {
-            console.log('close!!!');
             state.showModal = false;
             state.isFinish = false;
             state.commentList = [];
             state.feedId = 0;
             state.page = 1;
+            state.comment = '';
         }
 
         const setFeedId = feedId => {

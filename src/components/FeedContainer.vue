@@ -29,7 +29,10 @@ onUnmounted(() => {
 });
 
 const getData = async () => {
-    
+    if (state.isLoading || state.isFinish) {
+        return;
+    }
+
     state.isLoading = true;
     const params = {
         page: feedStore.page,
@@ -54,47 +57,40 @@ const getData = async () => {
                 state.isFinish = true
             }        
         }
-    } catch(e) {
-        console.log('e: ', e);
     } finally {
         state.isLoading = false;
     }
-}
+};
 
 
 //피드 삭제
 const doDeleteFeed = async (feedId, idx) => {
     if(!confirm('삭제하시겠습니까?')) { return; }
-
-    console.log('feedId:', feedId);
-    console.log('idx:', idx);
     
-    const params = { 'feed_id': feedId }
+    const params = { feed_id: feedId };
 
     const res = await deleteFeed(params);
     if(res.status === 200) {
-        //state.list.splice(idx, 1);
         feedStore.deleteFeedByIdx(idx);
     }
-}
+};
 
 watch(() => feedStore.reLoading, newVal => {
-    console.log('newVal:', newVal)
-
     if(newVal === true) {        
+        state.isFinish = false;
         getData();
         feedStore.setReLoading(false);
     }
 });
-
-// feedStore.$subscribe((mutation, state) => {
-//     console.log('mutation: ', mutation)
-//     //if(mutation.reLoading)
-// }, { detached: true });
 </script>
 
 <template>    
-    <feed-card v-for="item in feedStore.feedList" :key="item.feedId" :item="item" :yn-del="props.ynDel" @on-delete-feed="doDeleteFeed(item.feedId, idx)" />
+    <feed-card
+        v-for="(item, idx) in feedStore.feedList"
+        :key="item.feedId"
+        :item="item"
+        :yn-del="props.ynDel"
+        @on-delete-feed="doDeleteFeed(item.feedId, idx)" />
     <div v-if="state.isLoading" class="loading"><img :src="loadingImg"/></div>    
 </template>
 

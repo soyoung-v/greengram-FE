@@ -10,11 +10,6 @@ const commentModalStore = useCommentModalStore();
 const props = defineProps({
   item: Object
 });
-
-const emit = defineEmits(['onDeleteComment']);
-const deleteComment = () => {
-  emit('onDeleteComment');
-};
 </script>
 
 <template>

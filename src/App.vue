@@ -42,7 +42,6 @@ const deletePreviewPic = idx => {
 }
 
 const saveFeed = async () => {
-    console.log('state.feed.pics: ', state.feed.pics);
     const MAX_PIC_COUNT = 10;
     //사진 있는지 확인    
     if(state.feed.pics.length === 0) { 
@@ -83,8 +82,6 @@ const saveFeed = async () => {
                 commentList: []
             }  
         };
-
-        console.log('item: ', item);
 
         feedStore.addFeedUnshift(item);
         initInputs();

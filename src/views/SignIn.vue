@@ -11,8 +11,8 @@ const authentication = useAuthenticationStore();
 
 const state = reactive({
     form: {
-        uid: 'mic3',
-        upw: 'aaaa1212!!',
+        uid: '',
+        upw: '',
     },
 });
 
@@ -21,10 +21,8 @@ const submit = async () => {
     if (checkValidation()) { return; }
 
     const res = await signIn(state.form);
-    console.log('Login.vue - submit() - res: ', res);
     if (res.status === 200) {
         const signedUser = res.data.resultData;
-        console.log('signedUser:', signedUser);
         authentication.setSignedUser(signedUser);
         await router.push('/');
     }

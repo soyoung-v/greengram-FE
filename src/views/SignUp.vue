@@ -11,15 +11,15 @@ const router = useRouter();
 
 const state = reactive({
     data: {
-        nm: '홍길동',
-        uid: 'mic2',
-        upw: 'aaaa1212!!'              
+        nm: '',
+        uid: '',
+        upw: ''              
     },
-    chkUpw: 'aaaa1212!!',
+    chkUpw: '',
     pic: null
 });
 
-const openFileSelector = e => {
+const openFileSelector = () => {
     fileInput.value.click();
 };
 
@@ -53,7 +53,6 @@ const submit = async () => {
     }
 
     const res = await signUp(formData);
-    console.log('res:', res);
     if (res) {
         alert('회원가입을 축하합니다.');
         await router.push('/sign-in');

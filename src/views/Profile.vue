@@ -25,9 +25,12 @@ const state = reactive({
 });
 
 const init = (userId) => {
+    const signedUserId = String(authenticationStore.state.signedUser.userId);
+    const profileUserId = String(userId);
+
     state.isFinish = false;
     state.userProfile = {
-        userId: userId,
+        userId,
         uid: '',
         pic: '',
         nickName: '',
@@ -38,11 +41,10 @@ const init = (userId) => {
         followingCount: 0,
         followState: 0,
     };
-    state.isMyProfile = userId === authenticationStore.state.signedUser.userId;
+    state.isMyProfile = profileUserId === signedUserId;
 };
 
 init(route.params.userId);
-console.log('route.params.userId:', route.params.userId);
 
 /*
 팔로우 상태
@@ -52,7 +54,6 @@ console.log('route.params.userId:', route.params.userId);
 3: 서로 팔로우 한 상태
 */
 const getFollowStateText = (followState) => {
-    console.log(`followState : ${followState}`);
     switch (followState) {
         case 0: 
             return '팔로우';
@@ -77,8 +78,6 @@ const getUserData = async () => {
 };
 
 const removeUserPic = async () => {
-    console.log('프로파일 이미지 삭제');
-
     const res = await deleteUserProfilePic();
     if (res.status === 200) {
         state.userProfile.pic = null;

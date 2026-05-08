@@ -12,14 +12,12 @@ export const throttle = (fn, delay) => {
 };
 
 export const bindEvent = (state, window, fn) => {
-        // console.log('스크롤 이벤트 (스로틀 적용됨)');
     if (state.isFinish || state.isLoading) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = window.document.documentElement;
+    
+    const { scrollHeight } = window.document.documentElement;
     
     // 조건 검사: 바닥에서 500px 이내로 접근했는지 확인
     if (window.innerHeight + window.scrollY + INFINITY_SCROLL_GAP >= scrollHeight) {
-        console.log('데이터 가져오기 실행');
         fn();
     }
 }

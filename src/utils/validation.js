@@ -1,6 +1,5 @@
 export const checkValidation = () => {
   const validList = document.querySelectorAll('.valid');
-  console.log('validList:', validList);
   if(validList.length > 0) { //유효성 검사를 해야하는 input이 하나 이상이라면
     //validList는 유사배열
     //Array.from(validList) 진짜배열로 전환

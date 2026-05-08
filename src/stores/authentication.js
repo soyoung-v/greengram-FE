@@ -15,9 +15,7 @@ export const useAuthenticationStore = defineStore(
         });
 
         const setSignedUser = signedUser => {
-            console.log('auth: ', signedUser)
             state.isSigned = true;
-            //state.signedUser = signedUser
             const user = {
                 userId: signedUser.signedUserId,
                 nickName: signedUser.nm,
@@ -32,9 +30,12 @@ export const useAuthenticationStore = defineStore(
         }
 
         const signOut = async () => {
-            console.log('signOut 처리')
             state.isSigned = false;
-            state.signedUser = null;            
+            state.signedUser = {
+                userId: 0,
+                nickName: '',
+                pic: null
+            };
             await router.push('/sign-in')
         }
 
