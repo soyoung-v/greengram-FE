@@ -41,9 +41,6 @@ const getData = async () => {
     if(feedStore.profileUserId) {
         params.profile_user_id = feedStore.profileUserId
     }
-    if(feedStore.keyword) {
-        params.keyword = feedStore.keyword
-    }
     
     try {
         const res = await getFeedList(params);

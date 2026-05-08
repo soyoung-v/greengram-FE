@@ -8,20 +8,17 @@ export const useFeedStore = defineStore('feed',
             feedList: [],
             page: 1,            
             profileUserId: '',
-            keyword: '',
             reLoading: false
         })
 
         const setPage = page => state.page = page;
         const setProfileUserId = userId => state.profileUserId = userId;
-        const setKeyword = keyword => state.keyword = keyword;
         const setReLoading = reLoading => state.reLoading = reLoading;
 
         const init = () => {
             state.feedList = [];
             state.page = 1;
             state.profileUserId = '';
-            state.keyword = '';
             state.reLoading = false;
         }
 
@@ -57,18 +54,15 @@ export const useFeedStore = defineStore('feed',
         const page = computed( () => state.page );
         const rowPerPage = computed( () => state.rowPerPage );
         const profileUserId = computed( () => state.profileUserId );
-        const keyword = computed( () => state.keyword );
         const reLoading = computed( () => state.reLoading );
 
         return { feedList
                 , page
                 , rowPerPage
                 , profileUserId
-                , keyword
                 , reLoading
                 , setPage
                 , setProfileUserId
-                , setKeyword
                 , setReLoading
                 , init
                 , addFeedList

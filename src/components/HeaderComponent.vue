@@ -2,10 +2,8 @@
 import logo from '@/assets/logo.png';
 import ProfileImg from './ProfileImg.vue';
 import { useAuthenticationStore } from '@/stores/authentication';
-import { reactive, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { signOut } from '@/services/userService';
-import { getKeywordList } from '@/services/feedService';
 import { useFeedStore } from '@/stores/feed';
 
 const route = useRoute();
@@ -13,51 +11,11 @@ const router = useRouter();
 const authenticationStore = useAuthenticationStore();
 const feedStore = useFeedStore();
 
-const state = reactive({
-    search: '',
-    searchList: []
-});
-
 const doSignOut = async () => {    
     const res = await signOut();
     if(res.status === 200) {
         await authenticationStore.signOut();
     }
-};
-
-let debounceTimer = null;
-const onTyping = () => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-        getSearchKeyword();
-    }, 400);
-};
-
-const getSearchKeyword = async () => {
-    state.searchList = [];
-    if(!state.search) { return; }
-
-    const params = {
-        keyword: state.search
-    }
-    const res = await getKeywordList(params);
-    if(res.status === 200) {
-        state.searchList = res.data.resultData ?? res.data.result ?? [];
-    }
-};
-
-const getFeedData = async () => {
-    const keyword = state.search.trim();
-    feedStore.clearList();
-    feedStore.setPage(1);
-    feedStore.setReLoading(false);
-
-    if (route.path !== '/') {
-        await router.push('/');
-    }
-
-    feedStore.setKeyword(keyword);
-    feedStore.setReLoading(true);
 };
 
 //메인 화면으로 이동
@@ -68,11 +26,6 @@ const moveToMain = () => {
     feedStore.init();  
     router.push('/');
 };
-
-watch(() => route.fullPath, () => {    
-    state.search = '';    
-    state.searchList = [];
-});
 </script>
 
 <template>
@@ -82,18 +35,6 @@ watch(() => route.fullPath, () => {
             <button type="button" class="header-logo-button" @click="moveToMain" aria-label="홈으로 이동">
                 <img :src="logo" class="h24 w24" alt="Greengram 로고" />
             </button>
-        </div>
-        <div class="header-search">
-            <b-form-input
-                list="search-list-id"
-                class="header-search-input"
-                @input="onTyping"
-                @keyup.enter="getFeedData"
-                v-model="state.search" />
-                <datalist id="search-list-id">                    
-                    <option v-for="item in state.searchList" :key="item">{{ item }}</option>
-                </datalist>
-            <button type="button" class="header-search-button" @click="getFeedData">Search</button>
         </div>
         <div class="header-actions">
             <nav class="header-nav">
@@ -157,7 +98,7 @@ watch(() => route.fullPath, () => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
     width: 100%;
     max-width: 960px;
     height: 100%;
@@ -169,37 +110,8 @@ watch(() => route.fullPath, () => {
 .header-actions {
     display: flex;
     align-items: center;
-    flex-shrink: 0;
 }
 
-.header-search {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-    max-width: 360px;
-    margin: 0 auto;
-}
-
-.header-search-input {
-    min-width: 0;
-}
-
-:deep(.header-search-input.form-control) {
-    height: 36px;
-    border: 1px solid var(--gg-border);
-    border-radius: var(--gg-radius-md);
-    background: var(--gg-surface);
-    color: var(--gg-text);
-    box-shadow: none;
-}
-
-:deep(.header-search-input.form-control:focus) {
-    border-color: var(--gg-border);
-    box-shadow: none;
-}
-
-.header-search-button,
 .header-icon-button,
 .header-profile-button,
 .header-logo-button {
@@ -212,19 +124,10 @@ watch(() => route.fullPath, () => {
     transition: background-color 0.2s ease;
 }
 
-.header-search-button:hover,
 .header-icon-button:hover,
 .header-profile-button:hover,
 .header-logo-button:hover {
     background: #f2f2f2;
-}
-
-.header-search-button {
-    height: 36px;
-    padding: 0 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    color: var(--gg-primary);
 }
 
 .header-logo-button,
@@ -255,15 +158,6 @@ watch(() => route.fullPath, () => {
     .header-inner {
         gap: 12px;
         padding: 0 12px;
-    }
-
-    .header-search {
-        max-width: none;
-    }
-
-    .header-search-button {
-        padding: 0 10px;
-        color: var(--gg-secondary);
     }
 }
 </style>
