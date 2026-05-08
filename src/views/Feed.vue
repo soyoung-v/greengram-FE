@@ -14,7 +14,7 @@ onMounted(() => {
 <template>
     <section class="back_color">
         <div class="container d-flex flex-column align-items-center">
-            <FeedContainer :yn-del="false" />
+            <FeedContainer :yn-del="true" />
         </div>
     </section>    
 </template>
