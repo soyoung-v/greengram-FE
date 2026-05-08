@@ -84,16 +84,22 @@ watch(() => feedStore.reLoading, newVal => {
 });
 </script>
 
-<template>    
-    <feed-card
-        v-for="(item, idx) in feedStore.feedList"
-        :key="item.feedId"
-        :item="item"
-        :yn-del="props.ynDel"
-        @on-delete-feed="doDeleteFeed(item.feedId, idx)" />
-    <div v-if="state.isLoading" class="loading"><img :src="loadingImg"/></div>    
+<template>
+    <div class="feed-list">
+        <template v-if="feedStore.feedList.length > 0">
+            <feed-card
+                v-for="(item, idx) in feedStore.feedList"
+                :key="item.feedId"
+                :item="item"
+                :yn-del="props.ynDel"
+                @on-delete-feed="doDeleteFeed(item.feedId, idx)" />
+        </template>
+        <div v-else-if="!state.isLoading && state.isFinish" class="feed-empty">
+            아직 등록된 피드가 없습니다.
+        </div>
+        <div v-if="state.isLoading" class="loading feed-loading"><img :src="loadingImg"/></div>
+    </div>
 </template>
 
 <style scoped>
-
 </style>

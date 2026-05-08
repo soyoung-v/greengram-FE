@@ -1,4 +1,5 @@
 <script setup>
+import '@/assets/main.css';
 import HeaderComponent from './components/HeaderComponent.vue';
 import loadingImg from '@/assets/loading.gif';
 import { ref, reactive, watch, nextTick } from 'vue';
@@ -135,57 +136,89 @@ watch(() => commentModalStore.state.commentList, async (newList) => {
     <header-component />    
     <router-view />
     
-    <b-modal v-model="messageModalStore.state.isShow" ok-only>{{ messageModalStore.state.message }}</b-modal>
+    <b-modal
+        v-model="messageModalStore.state.isShow"
+        ok-only
+        ok-title="확인"
+        modal-class="gg-modal gg-message-modal"
+        content-class="gg-modal-content"
+        body-class="gg-message-modal-body"
+        footer-class="gg-modal-footer">
+        <div class="gg-message-content">
+            <p class="gg-message-text">{{ messageModalStore.state.message }}</p>
+        </div>
+    </b-modal>
 
     <b-modal v-model="commentModalStore.state.showModal" size="lg" 
             no-close-on-backdrop hide-footer 
-            modal-class="my-custom-modal" @close="commentModalStore.close">
-        <div class="p-3 h100p d-flex flex-column comment-container">
-            <div ref="commentListContainer" class="comment-list overflow-y-auto">
+            modal-class="gg-modal gg-comment-modal"
+            content-class="gg-modal-content gg-comment-modal-content"
+            body-class="gg-comment-modal-body"
+            @close="commentModalStore.close">
+        <div class="gg-comment-shell">
+            <div class="gg-comment-header">
+                <h5 class="gg-modal-title">댓글</h5>
+            </div>
+            <div ref="commentListContainer" class="comment-list gg-comment-list overflow-y-auto">
                 <FeedCommentCard
                     v-for="item in commentModalStore.state.commentList"
                     :key="item.feedCommentId"
                     :item="item" />
-                <div v-if="commentModalStore.state.isLoading" class="loading display-none">
+                <div v-if="commentModalStore.state.isLoading" class="loading display-none gg-comment-loading">
                     <img :src="loadingImg" />
                 </div>
-            </div>                
-            <div class="p-2 d-flex flex-row comment-input">
+            </div>
+            <div class="gg-comment-input-wrap">
                 <input
                     type="text"
                     name="commentValue"
-                    class="flex-grow-1 my_input back_color"
+                    class="flex-grow-1 gg-modal-input"
                     placeholder="댓글을 입력하세요..."
                     v-model="commentModalStore.state.comment"
                     @keyup.enter="commentModalStore.doPostComment" />
 
-                <button class="btn btn-outline-primary" @click="commentModalStore.doPostComment">
+                <button class="gg-modal-primary-button gg-comment-submit" @click="commentModalStore.doPostComment">
                     등록
                 </button>
-                
             </div>
         </div>
         
     </b-modal>
 
     <div class="modal fade" id="newFeedModal" tabIndex="-1" aria-labelledby="newFeedModalLabel" aria-hidden="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content" id="newFeedModalContent">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="newFeedModalLabel">새 게시물 만들기</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ref="modalCloseButton"></button>
+        <div class="modal-dialog modal-dialog-centered modal-xl gg-feed-modal-dialog">
+            <div class="modal-content gg-modal-content gg-feed-modal-content" id="newFeedModalContent">
+                <div class="modal-header gg-modal-header">
+                    <h5 class="modal-title gg-modal-title" id="newFeedModalLabel">새 게시물 만들기</h5>
+                    <button type="button" class="btn-close gg-modal-close" data-bs-dismiss="modal" aria-label="Close" ref="modalCloseButton"></button>
                 </div>
-                <div class="modal-body" id="id-modal-body">                            
-                    <div class="mt-3">location: <input type="text" name="location" placeholder="위치" v-model="state.feed.location"/></div>
-                    <div class="mt-3">contents: <textarea name="contents" placeholder="내용" v-model="state.feed.contents"></textarea></div>
-                    <div class="mt-3"><label>pic: <input name="pics" type="file" multiple accept="image/*" @change="handlePicChanged" /></label></div>                    
-                    <div class="d-flex flex-wrap gap-3 mt-3">
+                <div class="modal-body gg-feed-modal-body" id="id-modal-body">
+                    <div class="gg-modal-field">
+                        <label class="gg-modal-label" for="feed-location">위치</label>
+                        <input id="feed-location" class="gg-modal-input" type="text" name="location" placeholder="위치" v-model="state.feed.location"/>
+                    </div>
+                    <div class="gg-modal-field">
+                        <label class="gg-modal-label" for="feed-contents">내용</label>
+                        <textarea id="feed-contents" class="gg-modal-textarea" name="contents" placeholder="내용을 입력하세요" v-model="state.feed.contents"></textarea>
+                    </div>
+                    <div class="gg-modal-field">
+                        <label class="gg-modal-label gg-upload-label">
+                            <span class="gg-modal-border-button">이미지 선택</span>
+                            <input class="gg-file-input" name="pics" type="file" multiple accept="image/*" @change="handlePicChanged" />
+                        </label>
+                    </div>
+                    <div class="gg-preview-grid" :class="{ 'gg-preview-grid-empty': state.previewPics.length === 0 }">
                         <div class="preview-container" v-for="(item, idx) in state.previewPics" :key="idx">
-                            <img class="preview-img" :src="item"></img>                            
+                            <img class="preview-img" :src="item" />                            
                             <font-awesome-icon icon="fa fa-trash" class="pointer preview-img-delete" @click="deletePreviewPic(idx)" />
                         </div>
+                        <div v-if="state.previewPics.length === 0" class="gg-preview-empty">
+                            업로드한 이미지가 여기에 표시됩니다.
+                        </div>
                     </div>
-                    <div class="mt-3"><button @click="saveFeed">전송</button></div>
+                    <div class="gg-feed-modal-actions">
+                        <button class="gg-modal-primary-button" @click="saveFeed">등록</button>
+                    </div>
                 </div>
             </div>
         </div>                
@@ -195,19 +228,297 @@ watch(() => commentModalStore.state.commentList, async (newList) => {
 </template>
 
 <style>
-.comment-list { flex-grow: 1; }
-.comment-input { height: 50px; }
-.my-custom-modal .modal-dialog {
-    display: flex;         /* 화면에 고정 */    
-    justify-content: center;
-    align-items: flex-end;    
-    
-    /* 가로 너비 유지 (size="lg"에 맞게 조절 가능) */
-    width: 90%; 
-    max-width: 700px;          /* lg 사이즈 권장 최대 너비 */
+.gg-modal .modal-dialog,
+.gg-feed-modal-dialog {
+    width: calc(100% - 24px);
+    max-width: 720px;
 }
 
-.my-custom-modal .modal-body {    
-    height: 80vh;
+.gg-modal .modal-content,
+.gg-feed-modal-content {
+    border: 1px solid var(--gg-border);
+    border-radius: var(--gg-radius-lg);
+    background: var(--gg-surface);
+    box-shadow: 0 14px 28px rgba(43, 36, 48, 0.08);
+    overflow: hidden;
+}
+
+.gg-modal .modal-backdrop,
+.modal-backdrop.show {
+    background: rgba(43, 36, 48, 0.45);
+}
+
+.gg-modal .modal-header,
+.gg-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 0;
+    border-bottom: 0;
+}
+
+.gg-modal .modal-footer,
+.gg-modal-footer {
+    border-top: 0;
+    padding: 0 20px 20px;
+}
+
+.gg-modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gg-text);
+}
+
+.gg-modal-close,
+.gg-modal .btn-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 50%;
+    background-color: transparent;
+    opacity: 1;
+}
+
+.gg-modal-close:hover,
+.gg-modal .btn-close:hover {
+    background-color: var(--gg-soft-pink);
+}
+
+.gg-modal-input,
+.gg-modal-textarea {
+    width: 100%;
+    border: 1px solid var(--gg-border);
+    border-radius: 10px;
+    background: var(--gg-surface);
+    color: var(--gg-text);
+    font-size: 14px;
+}
+
+.gg-modal-input {
+    height: 42px;
+    padding: 0 12px;
+}
+
+.gg-modal-textarea {
+    min-height: 112px;
+    padding: 12px;
+    resize: none;
+}
+
+.gg-modal-input:focus,
+.gg-modal-textarea:focus {
+    outline: none;
+    border-color: var(--gg-primary);
+    box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.12);
+}
+
+.gg-modal-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gg-text);
+}
+
+.gg-modal-primary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 92px;
+    height: 42px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--gg-primary);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.gg-modal-primary-button:hover {
+    background: var(--gg-primary-hover);
+}
+
+.gg-modal-border-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid var(--gg-border);
+    border-radius: 10px;
+    background: var(--gg-surface);
+    color: var(--gg-text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.gg-modal-border-button:hover {
+    background: var(--gg-soft-pink);
+}
+
+.gg-message-modal-body {
+    padding: 6px 20px 18px;
+}
+
+.gg-message-content {
+    padding-top: 4px;
+}
+
+.gg-message-text {
+    margin: 0;
+    color: var(--gg-text);
+    font-size: 15px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.gg-comment-modal .modal-dialog {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 1rem);
+}
+
+.gg-comment-modal-content {
+    max-height: min(78vh, 720px);
+}
+
+.gg-comment-modal-body {
+    padding: 18px 20px 20px;
+}
+
+.gg-comment-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+}
+
+.gg-comment-header {
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--gg-border);
+}
+
+.comment-list.gg-comment-list {
+    flex: 1;
+    max-height: 48vh;
+    padding-right: 4px;
+}
+
+.gg-comment-loading {
+    min-height: 72px;
+}
+
+.gg-comment-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--gg-border);
+}
+
+.gg-comment-submit {
+    flex-shrink: 0;
+}
+
+.gg-feed-modal-content {
+    max-height: min(84vh, 820px);
+}
+
+.gg-feed-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 20px;
+}
+
+.gg-modal-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.gg-upload-label {
+    margin-bottom: 0;
+}
+
+.gg-file-input {
+    display: none;
+}
+
+.gg-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    min-height: 134px;
+    padding: 14px;
+    border: 1px solid var(--gg-border);
+    border-radius: 14px;
+    background: var(--gg-surface);
+}
+
+.gg-preview-grid-empty {
+    background: linear-gradient(180deg, var(--gg-soft-pink) 0%, var(--gg-soft-purple) 100%);
+}
+
+.gg-preview-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 104px;
+    color: var(--gg-text-sub);
+    font-size: 14px;
+    text-align: center;
+}
+
+.preview-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+}
+
+.gg-feed-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .gg-modal .modal-dialog,
+    .gg-feed-modal-dialog {
+        width: calc(100% - 24px);
+        margin: 12px auto;
+    }
+
+    .gg-comment-modal-content,
+    .gg-feed-modal-content {
+        max-height: calc(100vh - 24px);
+    }
+
+    .gg-comment-modal-body,
+    .gg-feed-modal-body {
+        padding: 18px 16px;
+    }
+
+    .gg-comment-input-wrap {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .gg-comment-submit,
+    .gg-feed-modal-actions .gg-modal-primary-button {
+        width: 100%;
+    }
+
+    .gg-feed-modal-actions {
+        justify-content: stretch;
+    }
+
+    .gg-preview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 </style>

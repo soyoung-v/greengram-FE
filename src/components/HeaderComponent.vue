@@ -76,23 +76,35 @@ watch(() => route.fullPath, () => {
 </script>
 
 <template>
-<header class="container py-3" v-if="authenticationStore.state.isSigned">
-    <div id="globalConst">
-        <div class="d-flex flex-column flex-md-row align-items-center">
-            <div class="d-inline-flex flex-grow-1 flex-shrink-0 pointer">
-                <img :src="logo" class="h24 w24" @click="moveToMain"/>
-            </div>
-            <div class="d-inline-flex flex-grow-1 flex-shrink-0">
-                <b-form-input list="search-list-id" @input="onTyping" @keyup.enter="getFeedData" v-model="state.search"/>
+<header class="header-shell" v-if="authenticationStore.state.isSigned">
+    <div class="header-inner">
+        <div class="header-brand">
+            <button type="button" class="header-logo-button" @click="moveToMain" aria-label="홈으로 이동">
+                <img :src="logo" class="h24 w24" alt="Greengram 로고" />
+            </button>
+        </div>
+        <div class="header-search">
+            <b-form-input
+                list="search-list-id"
+                class="header-search-input"
+                @input="onTyping"
+                @keyup.enter="getFeedData"
+                v-model="state.search" />
                 <datalist id="search-list-id">                    
                     <option v-for="item in state.searchList" :key="item">{{ item }}</option>
                 </datalist>
-                <b-button variant="outline-secondary" class="ms-3" size="sm" @click="getFeedData">Search</b-button>
-            </div>
-            <div class="d-inline-flex flex-grow-1 flex-shrink-0">
-                <nav class="d-flex flex-grow-1 flex-column flex-md-row justify-content-end">
-                    <div class="d-inline-flex">
-                        <a href="#" id="newFeedModalBtn" data-bs-toggle="modal" data-bs-target="#newFeedModal">
+            <button type="button" class="header-search-button" @click="getFeedData">Search</button>
+        </div>
+        <div class="header-actions">
+            <nav class="header-nav">
+                <div class="header-action-item">
+                    <button
+                        type="button"
+                        class="header-icon-button"
+                        id="newFeedModalBtn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#newFeedModal"
+                        aria-label="새 게시물 만들기">
                             <svg aria-label="새로운 게시물"  class="_8-yf5" color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24">
                                 <path d="M2 12v3.45c0 2.849.698 4.005 1.606 4.944.94.909 2.098 1.608 4.946 1.608h6.896c2.848 0 4.006-.7 4.946-1.608C21.302 19.455 22 18.3 22 15.45V8.552c0-2.849-.698-4.006-1.606-4.945C19.454 2.7 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.547 2 5.703 2 8.552z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"  strokeWidth="2">
                                 </path>
@@ -101,13 +113,13 @@ watch(() => route.fullPath, () => {
                                 <line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"  strokeWidth="2" x1="12.003" x2="12.003" y1="6.545" y2="17.455">
                                 </line>
                             </svg>
-                        </a>
-                    </div>
-                    <div class="d-inline-flex dropdown">
-                        <a href="#" role="button" id="navDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"  class="header_profile">
-                            <profile-img :userId="authenticationStore.state.signedUser.userId" :pic="authenticationStore.state.signedUser.pic" :size="24" :clsValue="'pointer profile'" />
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navDropdownMenuLink">
+                    </button>
+                </div>
+                <div class="header-action-item dropdown">
+                    <button type="button" id="navDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" class="header-profile-button">
+                        <profile-img :userId="authenticationStore.state.signedUser.userId" :pic="authenticationStore.state.signedUser.pic" :size="24" :clsValue="'pointer profile'" />
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navDropdownMenuLink">
                             <li>
                                 <router-link :to="`/profile/${authenticationStore.state.signedUser.userId}`">
                                     <span class="dropdown-item">
@@ -123,15 +135,135 @@ watch(() => route.fullPath, () => {
                             </li>          
                             <li><hr class="dropdown-divider"></hr></li>
                             <li><span class="dropdown-item pointer" @click="doSignOut">Sign out</span></li>
-                        </ul>
-                    </div>
-                </nav>
-            </div>
+                    </ul>
+                </div>
+            </nav>
         </div>
     </div>
 </header>
 </template>
 
 <style scoped>
-nav { align-items: center; gap: 20px; }
+.header-shell {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--gg-header-height);
+    background: var(--gg-surface);
+    border-bottom: 1px solid var(--gg-border);
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    max-width: 960px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.header-brand,
+.header-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.header-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+.header-search-input {
+    min-width: 0;
+}
+
+:deep(.header-search-input.form-control) {
+    height: 36px;
+    border: 1px solid var(--gg-border);
+    border-radius: var(--gg-radius-md);
+    background: var(--gg-surface);
+    color: var(--gg-text);
+    box-shadow: none;
+}
+
+:deep(.header-search-input.form-control:focus) {
+    border-color: var(--gg-border);
+    box-shadow: none;
+}
+
+.header-search-button,
+.header-icon-button,
+.header-profile-button,
+.header-logo-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: var(--gg-text);
+    transition: background-color 0.2s ease;
+}
+
+.header-search-button:hover,
+.header-icon-button:hover,
+.header-profile-button:hover,
+.header-logo-button:hover {
+    background: #f2f2f2;
+}
+
+.header-search-button {
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--gg-primary);
+}
+
+.header-logo-button,
+.header-icon-button,
+.header-profile-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-action-item {
+    display: flex;
+    align-items: center;
+}
+
+:deep(.dropdown-item:active) {
+    background: var(--gg-soft-pink);
+    color: var(--gg-text);
+}
+
+@media (max-width: 768px) {
+    .header-inner {
+        gap: 12px;
+        padding: 0 12px;
+    }
+
+    .header-search {
+        max-width: none;
+    }
+
+    .header-search-button {
+        padding: 0 10px;
+        color: var(--gg-secondary);
+    }
+}
 </style>

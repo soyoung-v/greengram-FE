@@ -14,8 +14,8 @@ const props = defineProps({
 
 <template>
   <div class="comment-card-wrapper">
-    <div class="cmtItemCont mt-3 d-flex flex-row">
-      <div class="cmtItemProfile">
+    <div class="gg-comment-card">
+      <div class="gg-comment-avatar">
         <router-link :to="`/profile/${props.item.writerUserId}`">
           <profile-img
             :clsValue="'profile pointer'"
@@ -24,25 +24,88 @@ const props = defineProps({
             :userId="props.item.writerUserId" />
         </router-link>      
       </div>
-      <router-link :to="`/profile/${props.item.writerUserId}`">
-        <div class="cmtItemCtnt ms-2">
-          <div class="pointer">
-            {{
-              props.item.writerNickName
-                ? props.item.writerNickName
-                : props.item.writerUid
-            }}
-          </div>        
+      <div class="gg-comment-main">
+        <div class="gg-comment-top">
+          <router-link :to="`/profile/${props.item.writerUserId}`">
+            <div class="pointer gg-comment-author">
+              {{
+                props.item.writerNickName
+                  ? props.item.writerNickName
+                  : props.item.writerUid
+              }}
+            </div>
+          </router-link>
+          <div class="gg-comment-date">{{ getDateTimeInfo(props.item.createdAt) }}</div>
+          <button
+            v-if="authenticationStore.state.signedUser.userId === props.item.writerUserId"
+            type="button"
+            class="gg-comment-delete"
+            @click="commentModalStore.doDeleteComment(props.item)">
+            삭제
+          </button>
         </div>
-      </router-link>
-       <div class="ms-2">{{ getDateTimeInfo(props.item.createdAt) }}</div>
-      <div v-if="authenticationStore.state.signedUser.userId === props.item.writerUserId" class="ms-3">
-          <font-awesome-icon icon="fa fa-trash" class="pointer" 
-            @click="commentModalStore.doDeleteComment(props.item)" />     
+        <div class="gg-comment-text">{{ props.item.comment }}</div>
       </div>
     </div>
-    <div>{{ props.item.comment }}</div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.gg-comment-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--gg-border);
+}
+
+.gg-comment-avatar {
+  display: flex;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.gg-comment-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.gg-comment-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gg-comment-author {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gg-text);
+}
+
+.gg-comment-date {
+  font-size: 12px;
+  color: var(--gg-text-sub);
+}
+
+.gg-comment-delete {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--gg-like);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gg-comment-text {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gg-text);
+  word-break: break-word;
+}
+
+.comment-card-wrapper:last-child .gg-comment-card {
+  border-bottom: 0;
+}
+</style>

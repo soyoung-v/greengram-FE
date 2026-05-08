@@ -38,9 +38,19 @@ const handleImgError = e => {
 <style scoped>
 .w24 { width: 24px; }
 .w30 { width: 30px; }
+.w96 { width: 96px; }
 .w100 { width: 100px; }
+.w120 { width: 120px; }
 .w250 { width: 250px; }
 .w300 { width: 300px; }
+
+.h24 { height: 24px; }
+.h30 { height: 30px; }
+.h96 { height: 96px; }
+.h100 { height: 100px; }
+.h120 { height: 120px; }
+.h250 { height: 250px; }
+.h300 { height: 300px; }
 
 .w800 { width: 800px; }
 
